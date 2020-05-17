@@ -14,19 +14,19 @@ using std::string;
 void testArray();
 void testList();
 
-const unsigned long AMOUNT = 1000;
+const unsigned long AMOUNT = 200;
 
 template <typename T>
 void testTimeFunctions(MyDeque<T>&, MyDeque<T>&);
 
 Student* getRandStudent() {
-	int a = 0 ,
-		b = 0; 
+	int a = 0,
+		b = 0;
 	do {
 		a = rand() % 5 + 1;
 		b = rand() % 5 + 1;
 	} while (a <= b);
-	auto h = new Student("Ilya", 'M', (double)a/b);
+	auto h = new Student("Ilya", 'M', (double)a / b);
 	return h;
 }
 
@@ -60,15 +60,22 @@ TypeOfSubsequence where(TypeOfSeq inputSequence, fcn f) {
 }
 
 //сортировка независимо от типа
-template<typename TypeOfSeq,  typename fcn1, typename fcn2>
-void sort(TypeOfSeq &inputSequence, fcn1 f, fcn2 swap) {
+template <typename TypeOfSeq, typename fcn1, typename fcn2>
+void sort(TypeOfSeq& inputSequence, fcn1 f, fcn2 swap) {
 	for (size_t i = 0; i < inputSequence.len() - 1; i++) {
 		for (size_t j = i + 1; j < inputSequence.len(); j++) {
-			if (f(inputSequence.getValueByIndex(i), inputSequence.getValueByIndex(j))) {
-				swap(inputSequence.getValueByIndex(i), inputSequence.getValueByIndex(j));
+			auto& temp1 = inputSequence.getValueByIndex(i);
+			auto& temp2 = inputSequence.getValueByIndex(j);
+			if (f(temp1, temp2)) {
+				swap(temp1, temp2);
 			}
 		}
 	}
+}
+
+template <typename TypeOfSeq, typename fcn1>
+long binarySearch(TypeOfSeq inputSequence, fcn1 search) {
+	return search(inputSequence);
 }
 
 
@@ -94,8 +101,8 @@ int main()
 		}
 	}
 	auto end = std::chrono::steady_clock::now();
-	auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
-	cout << "время создания массива длиной " << AMOUNT << ": " << elapsed_ms.count() << " ms\n";
+	auto elapsed_ms = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
+	cout << "время создания массива длиной " << AMOUNT << ": " << elapsed_ms.count() << " mcs\n";
 
 	auto begin1 = std::chrono::steady_clock::now();
 	MyDeque<double> listObject("listSequence");
@@ -116,7 +123,7 @@ int main()
 	auto elapsed1_ms = std::chrono::duration_cast<std::chrono::microseconds>(end1 - begin1);
 	cout << "время создания списка длиной " << AMOUNT << ": " << elapsed1_ms.count() << " mcs\n";
 	testTimeFunctions(listObject, arrayObject);
-	
+
 	//два теста, которые показывают работоспособность дека как на массиве, так и на списке двусвязном
 	testList();
 	testArray();
@@ -137,7 +144,7 @@ int main()
 
 	cout << valueFromReduce << endl;
 
-	map<MyDeque<double>>(d, [](double& valueToChange) {
+	map(d, [](double& valueToChange) {
 		valueToChange = 3 * valueToChange;
 		});
 
@@ -155,8 +162,9 @@ int main()
 			a = b;
 			b = temp;
 		});
+
 	cout << sd;
-	
+
 	//реализованный класс сложной структуры(ввод и добавление, а потом сортировка)
 	MyDeque<Student*> ddd("listSequence");
 	for (size_t i = 0; i < 10; i++)
@@ -172,14 +180,69 @@ int main()
 		}, [](Student* a, Student* b) {
 			a->swapStudents(*b);
 		});
+
 	map(ddd, [](Student* h) {
 		cout << *h;
 		});
-
-	cout << *ddd.getValueByIndex(3) << endl;
+	//некоторые методы со сложной структурой
+	cout << endl << *ddd.getValueByIndex(3) << endl;
 	Student** arr = ddd.getSubsequence(1, 8);
 	for (unsigned i = 0; i < 8; ++i) {
 		cout << *arr[i] << ' ';
+	}
+
+	cout << endl;
+
+	double ser = 3;
+	long index = binarySearch(ddd, [&ser](MyDeque<Student*> ddd) {
+		long l = 0;
+		long r = ddd.len() - 1;
+		while (l <= r) {
+			long middle = (l + r) / 2;
+			if (ser < ddd.getValueByIndex(middle)->getAverageMark()) {
+				r = middle - 1;
+			}
+			else if (ser > ddd.getValueByIndex(middle)->getAverageMark()) {
+				l = middle + 1;
+			}
+			else {
+				return middle;
+			}
+		}
+		return (long)-1;
+		});
+
+	if (index > -1) {
+		cout << *ddd.getValueByIndex(index) << endl;
+	}
+	else {
+		cout << "студента с таким средним баллом нет!(" << ser << ")" << endl;
+	}
+
+	ser = 18;
+	index = binarySearch(sd, [&ser](MyDeque<double> sd) {
+		long l = 0;
+		long r = sd.len() - 1;
+		while (l <= r) {
+			long middle = (l + r) / 2;
+			if (ser < sd.getValueByIndex(middle)) {
+				r = middle - 1;
+			}
+			else if (ser > sd.getValueByIndex(middle)) {
+				l = middle + 1;
+			}
+			else {
+				return middle;
+			}
+		}
+		return (long)-1;
+		});
+
+	if (index > -1) {
+		cout << index << endl;
+	}
+	else {
+		cout << "такого значения нет!" << endl;
 	}
 	return EXIT_SUCCESS;
 }
@@ -231,7 +294,7 @@ void testArray() {
 	cout << "длина дека после удаления: " << firstObject.len() << endl << endl;
 	cout << "конструктор копирования работает нормально: " << endl;
 	MyDeque<double> secondObject(firstObject);
-	cout << secondObject << endl << endl; 
+	cout << secondObject << endl << endl;
 	cout << "добавим два элемента в произвольные места дека(хотя в адекватный дек можно добавить только в начало или в конец...)" << endl;
 	for (unsigned long int i = 0; i < 2; ++i) {
 		index = rand() % 10;
@@ -249,7 +312,7 @@ void testArray() {
 	cout << "проверим конкатенацию: сложим деки firstObject + secondObject" << endl;
 	cout << "заодно проверим как работает оператор присвания одного объекта класса MyDeque  другому" << endl;
 	firstObject = firstObject + secondObject;
-		cout << firstObject << endl;
+	cout << firstObject << endl;
 	cout << "длина дека после добавления: " << firstObject.len() << endl << endl;
 	cout << firstObject << endl << endl;
 	a = rand() % 20;
@@ -258,7 +321,7 @@ void testArray() {
 	cout << firstObject << endl << endl;
 	secondObject.cleanAll();
 	firstObject.cleanAll();
-	cout << "длины деков после удаления: " << firstObject.len() <<  "  " << secondObject.len() << endl << endl;
+	cout << "длины деков после удаления: " << firstObject.len() << "  " << secondObject.len() << endl << endl;
 }
 
 //и тут работает на ура!
@@ -364,19 +427,19 @@ void testTimeFunctions(MyDeque<T>& listDeque, MyDeque<T>& arrayDeque)
 	end = std::chrono::steady_clock::now();
 	auto elapsed2_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
 	cout << "время сортировки массива: " << elapsed2_ms.count() << " ms\n";
-	
+
 	begin = std::chrono::steady_clock::now();
-	listDeque.deleteByIndex(649);
+	listDeque.deleteByIndex(67);
 	end = std::chrono::steady_clock::now();
 	auto elapsed3_ms = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
-	cout << "время удаления элемента с индексом 649 из списка: " << elapsed3_ms.count() << " mcs\n";
-	
+	cout << "время удаления элемента с индексом 67 из списка: " << elapsed3_ms.count() << " mcs\n";
+
 	begin = std::chrono::steady_clock::now();
-	arrayDeque.deleteByIndex(649);
+	arrayDeque.deleteByIndex(67);
 	end = std::chrono::steady_clock::now();
 	auto elapsed4_ms = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
-	cout << "время удаления элемента с индексом 649 из массива: " << elapsed4_ms.count() << " mcs\n";
-	
+	cout << "время удаления элемента с индексом 67 из массива: " << elapsed4_ms.count() << " mcs\n";
+
 	begin = std::chrono::steady_clock::now();
 	listDeque.pushBack(389.328);
 	end = std::chrono::steady_clock::now();
@@ -390,14 +453,14 @@ void testTimeFunctions(MyDeque<T>& listDeque, MyDeque<T>& arrayDeque)
 	cout << "время добавления элемента в конец в массив: " << elapsed6_ms.count() << " mcs\n";
 
 	begin = std::chrono::steady_clock::now();
-	listDeque.insertIn(423.42, 589);
+	listDeque.insertIn(423.42, 89);
 	end = std::chrono::steady_clock::now();
 	auto elapsed7_ms = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
-	cout << "время добавления элемента в позицию под номером 589 в список: " << elapsed7_ms.count() << " mcs\n";
+	cout << "время добавления элемента в позицию под номером 89 в список: " << elapsed7_ms.count() << " mcs\n";
 
 	begin = std::chrono::steady_clock::now();
-	arrayDeque.insertIn(423.42, 589);
+	arrayDeque.insertIn(423.42, 89);
 	end = std::chrono::steady_clock::now();
 	auto elapsed8_ms = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
-	cout << "время добавления элемента в позицию под номером 589 в массив: " << elapsed8_ms.count() << " mcs\n";
+	cout << "время добавления элемента в позицию под номером 89 в массив: " << elapsed8_ms.count() << " mcs\n";
 }
