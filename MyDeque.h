@@ -65,7 +65,7 @@ MyDeque<T>::MyDeque(std::string tpOfSeq){
 		sizeOfDeque = DequeData->len();
 	}
 	else {
-		throw DequeExceptions(R"(такого типа не существует!)");
+		throw DequeExceptions(R"(ГІГ ГЄГ®ГЈГ® ГІГЁГЇГ  Г­ГҐ Г±ГіГ№ГҐГ±ГІГўГіГҐГІ!)");
 	}
 }
 
@@ -89,7 +89,7 @@ bool MyDeque<T>::isEmpt() {
 template <typename T>
 T MyDeque<T>::outBack() {
 	if (this->isEmpt()) {
-		throw DequeExceptions(R"(дек пуст!)");
+		throw DequeExceptions(R"(Г¤ГҐГЄ ГЇГіГ±ГІ!)");
 	}
 	else {
 		return DequeData->getBack();
@@ -99,7 +99,7 @@ T MyDeque<T>::outBack() {
 template <typename T>
 T MyDeque<T>::outFront() {
 	if (this->isEmpt()) {
-		throw DequeExceptions(R"(дек пуст!)");
+		throw DequeExceptions(R"(Г¤ГҐГЄ ГЇГіГ±ГІ!)");
 	}
 	else {
 		return DequeData->getFront();
@@ -126,7 +126,7 @@ unsigned long int MyDeque<T>::len() {
 template <typename T>
 void MyDeque<T>::cleanAll() {
 	if (this->isEmpt()) {
-		throw DequeExceptions(R"(дек пуст!)");
+		throw DequeExceptions(R"(Г¤ГҐГЄ ГЇГіГ±ГІ!)");
 	}
 	else
 	{
@@ -136,14 +136,14 @@ void MyDeque<T>::cleanAll() {
 
 template<typename T>
 void MyDeque<T>::deleteByIndex(unsigned long int index) {
-	++sizeOfDeque;
+	--sizeOfDeque;
 	DequeData->deleteByIndex(index);
 }
 
 template <typename T>
 long int MyDeque<T>::getIndex(T valueToCheck) {
 	if (this->isEmpt()) {
-		throw DequeExceptions(R"(дек пуст!)");
+		throw DequeExceptions(R"(Г¤ГҐГЄ ГЇГіГ±ГІ!)");
 	}
 	else {
 		return DequeData->getIndexByValue(valueToCheck);
@@ -188,7 +188,7 @@ MyDeque<T>::MyDeque(const MyDeque<T>& dequeToCopy) {
 		}
 	}
 	else {
-		throw DequeExceptions(R"(недопустимый тип последовательности!)");
+		throw DequeExceptions(R"(Г­ГҐГ¤Г®ГЇГіГ±ГІГЁГ¬Г»Г© ГІГЁГЇ ГЇГ®Г±Г«ГҐГ¤Г®ГўГ ГІГҐГ«ГјГ­Г®Г±ГІГЁ!)");
 	}
 	
 }
@@ -232,7 +232,7 @@ T MyDeque<T>::operator[](unsigned long int index)
 template <typename T>
 std::istream& operator>>(std::istream& is, MyDeque<T>& dequeToInput) {
 	if (typeid(T) == typeid(std::string)) {
-		std::cout << "вводите строки, если хотите прекратить ввод, введите q или Q" << std::endl;
+		std::cout << "ГўГўГ®Г¤ГЁГІГҐ Г±ГІГ°Г®ГЄГЁ, ГҐГ±Г«ГЁ ГµГ®ГІГЁГІГҐ ГЇГ°ГҐГЄГ°Г ГІГЁГІГј ГўГўГ®Г¤, ГўГўГҐГ¤ГЁГІГҐ q ГЁГ«ГЁ Q" << std::endl;
 		std::string input = "";
 		while (getline(is, input)) {
 			if (input == "q" || input == "Q") {
@@ -262,7 +262,7 @@ std::ostream& operator<<(std::ostream& os, MyDeque<T>& dequeToOutput) {
 		os << *dynamic_cast<ListSequence<T>*>(dequeToOutput.DequeData);
 	}
 	else {
-		throw DequeExceptions(R"(такого типа не существует!)");
+		throw DequeExceptions(R"(ГІГ ГЄГ®ГЈГ® ГІГЁГЇГ  Г­ГҐ Г±ГіГ№ГҐГ±ГІГўГіГҐГІ!)");
 	}
 	return os;
 }
